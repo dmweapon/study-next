@@ -1,7 +1,8 @@
 import style from './[id].module.css'
 import { BookData } from '@/styles/types'
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
+import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import fetchOneBook from '@/lib/fetch-one-book'
+import { useRouter } from 'next/router'
 
 const mockData = {
   id: 1,
@@ -14,9 +15,24 @@ const mockData = {
   coverImgUrl: 'https://shopping-phinf.pstatic.net/main_3888828/38888282618.20230913071643.jpg',
 }
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+export const getStaticPaths = () => {
+  return {
+    paths: [{ params: { id: '1' } }, { params: { id: '2' } }, { params: { id: '3' } }],
+    fallback: true,
+  }
+}
+
+export const getStaticProps = async (ctx: GetStaticPropsContext) => {
   const id = ctx.params!.id
   const book = await fetchOneBook(Number(id))
+
+  // 존재하지 않는 페이지를 요청한 경우 notFount 페이지로 리다이렉트
+  if (!book) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
       book,
@@ -24,8 +40,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   }
 }
 
-export default function Page({ book }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function Page({ book }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter()
+
+  if (router.isFallback) return '페이지 로딩중입니다.'
   if (!book) return `도서를 불러오는데 문제가 발생했습니다.`
+
   const { id, title, subTitle, description, author, publisher, coverImgUrl }: BookData = book
   return (
     <div className={style.container}>
