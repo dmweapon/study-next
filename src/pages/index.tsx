@@ -4,19 +4,19 @@ import { ReactNode } from 'react'
 import books from '@/mock/books.json'
 import BookItem from '@/components/book-item'
 import { InferGetServerSidePropsType } from 'next'
+import fetchBooks from '@/lib/fetch-books'
 
-export const getServerSideProps = () => {
-  // 컴포넌트보다 먼저 실행되어 컴포넌트에 필요한 데이터를 불러오는 함수
-  const data = 'something'
+export const getServerSideProps = async () => {
+  const allBooks = await fetchBooks()
   return {
     props: {
-      data,
+      allBooks,
     },
   }
 }
 
-export default function Home({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  console.log('getServerSideProps :', data)
+export default function Home({ allBooks }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  console.log('allBooks :', allBooks)
 
   return (
     <div className={style.container}>
