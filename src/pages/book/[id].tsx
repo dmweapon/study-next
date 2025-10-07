@@ -1,5 +1,7 @@
 import style from './[id].module.css'
 import { BookData } from '@/styles/types'
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
+import fetchOneBook from '@/lib/fetch-one-book'
 
 const mockData = {
   id: 1,
@@ -12,8 +14,19 @@ const mockData = {
   coverImgUrl: 'https://shopping-phinf.pstatic.net/main_3888828/38888282618.20230913071643.jpg',
 }
 
-export default function Page() {
-  const { id, title, subTitle, description, author, publisher, coverImgUrl }: BookData = mockData
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const id = ctx.params!.id
+  const book = await fetchOneBook(Number(id))
+  return {
+    props: {
+      book,
+    },
+  }
+}
+
+export default function Page({ book }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  if (!book) return `도서를 불러오는데 문제가 발생했습니다.`
+  const { id, title, subTitle, description, author, publisher, coverImgUrl }: BookData = book
   return (
     <div className={style.container}>
       <div

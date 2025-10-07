@@ -1,11 +1,7 @@
 import { BookData } from '@/styles/types'
 
-export default async function fetchBooks(q?: string): Promise<BookData[]> {
-  let url = `http://localhost:12345/book`
-
-  if (q) {
-    url += `/search?q=${q}`
-  }
+export default async function fetchRandomBooks(): Promise<BookData[]> {
+  const url = 'http://localhost:12345/book/random'
 
   try {
     const response = await fetch(url)
@@ -13,7 +9,7 @@ export default async function fetchBooks(q?: string): Promise<BookData[]> {
       throw new Error(response.statusText)
     }
 
-    return response.json()
+    return await response.json()
   } catch (e) {
     console.error(e)
     return []

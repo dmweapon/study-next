@@ -1,21 +1,16 @@
 import { BookData } from '@/styles/types'
 
-export default async function fetchBooks(q?: string): Promise<BookData[]> {
-  let url = `http://localhost:12345/book`
-
-  if (q) {
-    url += `/search?q=${q}`
-  }
+export default async function fetchOneBook(id: number): Promise<BookData | null> {
+  const url = `http://localhost:12345/book/${id}`
 
   try {
     const response = await fetch(url)
     if (!response.ok) {
       throw new Error(response.statusText)
     }
-
-    return response.json()
+    return await response.json()
   } catch (e) {
     console.error(e)
-    return []
+    return null
   }
 }
