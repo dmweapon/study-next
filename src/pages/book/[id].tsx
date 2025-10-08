@@ -3,6 +3,7 @@ import { BookData } from '@/styles/types'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import fetchOneBook from '@/lib/fetch-one-book'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 
 const mockData = {
   id: 1,
@@ -43,26 +44,47 @@ export const getStaticProps = async (ctx: GetStaticPropsContext) => {
 export default function Page({ book }: InferGetStaticPropsType<typeof getStaticProps>) {
   const router = useRouter()
 
-  if (router.isFallback) return '페이지 로딩중입니다.'
+  // ISR - fallback true 환경에서 페이지를 로딩중일 때에도 기본적인 메타테그는 출력되도록 셋팅
+  if (router.isFallback) {
+    return (
+      <>
+        <Head>
+          <title>한입북스</title>
+          <meta property="og:title" content="한입북스" />
+          <meta property="og:image" content="/thumbnail.png" />
+          <meta property="og:description" content="한입 북스에 등록된 도서들을 만나보세요" />
+        </Head>
+        <div>'페이지 로딩중입니다.'</div>
+      </>
+    )
+  }
   if (!book) return `도서를 불러오는데 문제가 발생했습니다.`
 
   const { id, title, subTitle, description, author, publisher, coverImgUrl }: BookData = book
   return (
-    <div className={style.container}>
-      <div
-        className={style.cover_img_container}
-        style={{ backgroundImage: `url('${coverImgUrl}')` }}
-      >
-        <img src={coverImgUrl} />
-      </div>
-      <div className={style.title}>{title}</div>
-      <div className={style.subTitle}>{subTitle}</div>
-      <div>
-        <div className={style.author}>
-          {author} | {publisher}
+    <>
+      <Head>
+        <title>한입북스 - {title}</title>
+        <meta property="og:title" content={`한입북스 - ${title}`} />
+        <meta property="og:image" content={coverImgUrl} />
+        <meta property="og:description" content={description} />
+      </Head>
+      <div className={style.container}>
+        <div
+          className={style.cover_img_container}
+          style={{ backgroundImage: `url('${coverImgUrl}')` }}
+        >
+          <img src={coverImgUrl} />
         </div>
+        <div className={style.title}>{title}</div>
+        <div className={style.subTitle}>{subTitle}</div>
+        <div>
+          <div className={style.author}>
+            {author} | {publisher}
+          </div>
+        </div>
+        <div className={description}>{description}</div>
       </div>
-      <div className={description}>{description}</div>
-    </div>
+    </>
   )
 }
