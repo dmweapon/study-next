@@ -1,7 +1,8 @@
 import style from './page.module.css'
 import { BookData } from '@/types'
 
-export default async function Page({ params }: { params: { id: string | string[] } }) {
+export default async function Page(props: PageProps<'/book/[id]'>) {
+  const params = await props.params
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${params.id}`)
   if (!response.ok) {
     return <div>오류가 발생했습니다.</div>
