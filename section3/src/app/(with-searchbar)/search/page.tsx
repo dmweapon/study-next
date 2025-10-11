@@ -2,10 +2,11 @@ import BookItem from '@/components/book-item'
 import { BookData } from '@/types'
 import { delay } from '@/util/delay'
 import { Suspense } from 'react'
+import BookListSkeleton from '@/components/skeleton/book-list-skeleton'
 
 async function SearchResult({ q }: { q: string }) {
   // 임시 코드
-  await delay(2000)
+  await delay(1500)
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/search?q=${q ?? ''}`,
@@ -32,7 +33,7 @@ export default async function Page(props: PageProps<'/search'>) {
   const searchParams = await props.searchParams
   const qParam = Array.isArray(searchParams.q) ? searchParams.q[0] : searchParams.q || ''
   return (
-    <Suspense key={qParam || ''} fallback={<div>Loading ...</div>}>
+    <Suspense key={qParam || ''} fallback={<BookListSkeleton count={3} />}>
       <SearchResult q={qParam || ''} />
     </Suspense>
   )
