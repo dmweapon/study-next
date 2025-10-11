@@ -1,7 +1,11 @@
 import BookItem from '@/components/book-item'
 import { BookData } from '@/types'
+import { delay } from '@/util/delay'
 
 export default async function Page(props: PageProps<'/search'>) {
+  // 임시 코드
+  await delay(2000)
+
   const searchParams = await props.searchParams
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/search?q=${searchParams?.q ?? ''}`,
