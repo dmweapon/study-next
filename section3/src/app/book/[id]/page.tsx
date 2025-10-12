@@ -8,7 +8,12 @@ export function generateStaticParams() {
   return [{ id: '1' }, { id: '2' }, { id: '3' }]
 }
 
-export default async function Page(props: PageProps<'/book/[id]'>) {
+async function SamplePage({ bookId }: { bookId: number }) {
+  //
+}
+
+async function BookDetail(props: PageProps<'/book/[id]'>) {
+  //
   const params = await props.params
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${params.id}`)
   if (!response.ok) {
@@ -38,3 +43,5 @@ export default async function Page(props: PageProps<'/book/[id]'>) {
     </div>
   )
 }
+
+export default async function Page(props: PageProps<'/book/[id]'>) {}

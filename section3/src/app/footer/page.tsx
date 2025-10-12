@@ -1,7 +1,11 @@
 import { BookData } from '@/types'
+import { headers } from 'next/headers'
 
 export default async function Footer() {
-  const response = await fetch(`${process.env.BASE_URL}/api/book`, {
+  const headerList = await headers()
+  const host = headerList.get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const response = await fetch(`${protocol}://${host}/api/book`, {
     cache: 'force-cache',
   })
 
