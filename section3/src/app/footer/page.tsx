@@ -1,7 +1,7 @@
 import { BookData } from '@/types'
 
 export default async function Footer() {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`, {
+  const response = await fetch(`${process.env.BASE_URL}/api/book`, {
     cache: 'force-cache',
   })
 

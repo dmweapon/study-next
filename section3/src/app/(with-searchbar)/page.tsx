@@ -3,16 +3,20 @@ import style from './page.module.css'
 import { BookData } from '@/types'
 import { delay } from '@/util/delay'
 import { Suspense } from 'react'
-import BookItemSkeleton from '@/components/skeleton/book-item-skeleton'
 import BookListSkeleton from '@/components/skeleton/book-list-skeleton'
+import { headers } from 'next/headers'
 
 async function AllBooks() {
   await delay(1500)
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book`, {
-    cache: 'force-cache',
-  })
+  const headerList = await headers()
+  const host = headerList.get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const response = await fetch(`${protocol}://${host}/api/book`)
+
   if (!response.ok) {
-    return <div>오류가 발생했습니다...</div>
+    // return <div>오류가 발생했습니다...</div>
+    console.log('여기까지 옴')
+    throw new Error(response.statusText)
   }
   const allBooks: BookData[] = await response.json()
 
@@ -27,11 +31,15 @@ async function AllBooks() {
 
 async function RecoBooks() {
   await delay(3000)
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/random`, {
+  const headerList = await headers()
+  const host = headerList.get('host')
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
+  const response = await fetch(`${protocol}://${host}/api/book/random`, {
     next: { revalidate: 3 },
   })
   if (!response.ok) {
-    return <div>오류가 발생했습니다...</div>
+    // return <div>오류가 발생했습니다...</div>
+    throw new Error(response.statusText)
   }
   const recoBook = await response.json()
   return (
