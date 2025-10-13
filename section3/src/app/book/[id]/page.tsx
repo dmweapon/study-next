@@ -1,6 +1,8 @@
 import style from './page.module.css'
 import { BookData } from '@/types'
 import { notFound } from 'next/navigation'
+import { use } from 'react'
+import { createReviewAction } from '@/actions/create-review.action'
 
 // export const dynamicParams = false
 
@@ -8,14 +10,8 @@ export function generateStaticParams() {
   return [{ id: '1' }, { id: '2' }, { id: '3' }]
 }
 
-async function SamplePage({ bookId }: { bookId: number }) {
-  //
-}
-
-async function BookDetail(props: PageProps<'/book/[id]'>) {
-  //
-  const params = await props.params
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${params.id}`)
+async function BookDetail({ bookId }: { bookId: string }) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_SERVER_URL}/book/${bookId}`)
   if (!response.ok) {
     if (response.status === 404) {
       notFound()
@@ -27,7 +23,7 @@ async function BookDetail(props: PageProps<'/book/[id]'>) {
     (await response.json()) as BookData
 
   return (
-    <div className={style.container}>
+    <section>
       <div
         className={style.cover_img_container}
         style={{ backgroundImage: `url('${coverImgUrl}')` }}
@@ -40,8 +36,29 @@ async function BookDetail(props: PageProps<'/book/[id]'>) {
         {author} | {publisher}
       </div>
       <div className={style.description}>{description}</div>
-    </div>
+    </section>
   )
 }
 
-export default async function Page(props: PageProps<'/book/[id]'>) {}
+function ReviewEditor({ bookId }: { bookId: string }) {
+  return (
+    <section>
+      <form action={createReviewAction}>
+        <input name="bookId" value={bookId} readOnly hidden />
+        <input required name="content" placeholder="리뷰 내용" />
+        <input required name="author" placeholder="작성자" />
+        <button type="submit">작성하기</button>
+      </form>
+    </section>
+  )
+}
+
+export default function Page({ params }: PageProps<'/book/[id]'>) {
+  const { id } = use(params)
+  return (
+    <div className={style.container}>
+      <BookDetail bookId={id} />
+      <ReviewEditor bookId={id} />
+    </div>
+  )
+}
