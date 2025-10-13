@@ -5,8 +5,10 @@ import { createReviewAction } from '@/actions/create-review.action'
 import { useActionState, useEffect } from 'react'
 
 export default function ReviewEditor({ bookId }: { bookId: string }) {
+  // useActionState 정의
   const [state, formAction, isPending] = useActionState(createReviewAction, null)
 
+  // ServerAction에서 에러 발생시 Client의 예외처리
   useEffect(() => {
     if (state && !state.status) {
       alert(state.error)
